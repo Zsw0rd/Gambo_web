@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dice Game - Gambo</title>
+  <link rel="icon" type="image/jpg" href="images/logo.png">
+  <link rel="stylesheet" href="gambo.css">
+  <script src="gambo.js"></script>
+  <style>
+    .dice-container {
+      flex: 1; 
+      display: flex;
+      flex-wrap: wrap;
+      margin: 30px auto;
+      padding: 20px;
+      max-width: 1000px;
+      background: #2a2a2a;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+      gap: 20px;
+    }
+    .dice-container h1 {
+      flex: 0 0 100%;
+      color: gold;
+      margin: 0;
+      text-align: center;
+      text-shadow:
+      -1px -1px 0 black,
+      1px -1px 0 black,
+      -2px  2px 0 black,
+      2px  2px 0 black; 
+    }
+    .dice-controls {
+      flex: 0 0 240px;
+      background: #3a3a3a;
+      border-radius: 8px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .dice-controls h2 { font-size: 20px; }
+    .input-row { display: static;       
+      flex-direction: column;
+       gap: 5px; 
+      }
+    .input-row label { 
+      font-size: 14px; 
+    }
+    .input-row input {
+      padding: 8px;
+      border: 1px solid #444;
+      border-radius: 5px;
+      background: #222;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+    }
+    .bet-button {
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background: #33cc66;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 10px;
+    }
+    .bet-button:hover { background: #29a757; }
+    /* Right: Dice panel */
+    .dice-panel {
+      flex: 1 1 0;
+      background: #3a3a3a;
+      border-radius: 8px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      overflow: hidden;
+    }
+    .dice-panel h2 { 
+      font-size: 20px;
+     }
+
+    /* Top row: slider and roll toggle */
+    .top-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    /* Slider container */
+    .slider-container {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    display: flex;
+    align-items: center;  /* vertically center content */
+    justify-content: center;
+    }
+
+    .slider-track {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 100%;
+    height: 25px;  /* track height */
+    border-radius: 4px;
+    background: linear-gradient(to right, red, blue);
+    z-index: 1;
+    }
+    .dice-range {
+    width: 100%;
+    height: 30px;
+    background: transparent;
+    appearance:static;
+    -webkit-appearance: none;
+    z-index: 2;
+    }
+
+    /* For WebKit browsers: square thumb */
+    .dice-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 25%;
+    background:#29a757;
+    border: 2px solid #333;
+    cursor: pointer;
+
+    }
+    /* Fields row (Roll, Chance, Multiplier) */
+    .fields-row { 
+      display: flex; 
+      gap: 15px; 
+    }
+    .fields-row .input-row { 
+      flex: 1; }
+    
+    /* Message boxes */
+    #rollMessage { 
+      min-height: 30px;
+       font-size: 16px;
+        color: #b0b0ff;
+       }
+    #diceResultMessage { 
+      min-height: 30px; 
+      font-size: 16px; 
+      color: #ffd700; 
+    }
+
+    /* Roll Toggle Button */
+    #rollToggleBtn {
+      padding: 6px 10px;
+      border-radius: 4px;
+      border: 1px solid #444;
+      background-color: #333;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #rollToggleBtn:hover { 
+      background: #555;
+     }
+     #diceAudioToggle{
+      cursor: pointer;
+      margin-left: 10px;
+      font-size: 1.2em;
+      vertical-align: middle;
+      color: gold; /* default ON color */
+     }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="gamindex.html" class="logo">
+      <img src="images/logo.png" alt="Website Logo" width="40" height="40">
+    </a>
+    <h1>Dicy</h1>
+    
+    <div class="balance-section">
+      <span id="balance"></span>
+    </div>
+  </header>
+
+  <main>
+    <div class="dice-container">
+      <h1>Dicy
+        <!-- Audio toggle icon -->
+        <span id="diceAudioToggle" onclick="toggleDiceAudio()" title="Toggle Sound"> 🔊 </span>
+      </h1>
+      <div class="dice-controls">
+        <h2>Bet</h2>
+        <div class="input-row">
+          <label for="diceBetAmount">Bet Amount</label>
+          <input type="number" id="diceBetAmount" step="1" placeholder="0" />
+        </div>
+        <div class="input-row">
+          <label for="diceProfit">Profit on Win</label>
+          <input type="text" id="diceProfit" placeholder="0" readonly />
+        </div>
+        <button class="bet-button" onclick="dicePlaceBet()">Bet</button>
+      </div>
+      
+      <div class="dice-panel">
+        <h2>Dice</h2>
+        <div class="top-row">
+          <div class="slider-container">
+            <div class="slider-track"></div>
+            <input type="range" class="dice-range" id="diceSlider" min="2" max="98" step="1" value="50" />
+          </div>
+          <button id="rollToggleBtn">Roll Under</button>
+        </div>
+        
+        <div id="rollMessage"></div>
+        
+        <div class="fields-row">
+          <div class="input-row">
+            <label for="diceRoll">Roll</label>
+            <br>
+            <input type="number" id="diceRoll" step="1" value="50" />
+          </div>
+          <div class="input-row">
+            <label for="diceChance">Win Chance</label>
+            <input type="number" id="diceChance" step="1" value="50" />
+          </div>
+          <div class="input-row">
+            <label for="diceMultiplier">Multiplier</label>
+            <input type="number" id="diceMultiplier" step="0.0001" value="1.9800" />
+          </div>
+        </div>
+        
+        <div id="diceResultMessage"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer" style="background:#333; padding: 10px; text-align:center;">
+    <p>© 2025 GAMBO. All rights reserved.</p>
+  </footer>
+</body>
+</html>

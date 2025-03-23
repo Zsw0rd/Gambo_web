@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Roulette - Gambo</title>
+  <link rel="icon" type="image/png" href="images/logo.png">
+  <link rel="stylesheet" href="gambo.css">
+  <script src="gambo.js"></script>
+  <style>
+    /* Main Container */
+    #rouletteGame {
+      margin: 20px auto;
+      padding: 20px;
+      width: 90vw;
+      max-width: 1400px;
+      background-color: #222;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+    #rouletteGame h1 {
+      color: gold;
+      margin: 0;
+      text-align: center;
+      text-shadow:
+      -1px -1px 0 black,
+      1px -1px 0 black,
+      -2px  2px 0 black,
+      2px  2px 0 black; 
+    }
+
+    /* Table Container */
+    .table-container {
+      position: relative;
+      width: 1000px;
+      height: 700px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+    #rouletteTable {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    /* Inside Bets */
+    .inside-bets {
+      position: absolute;
+      top: 5%;
+      left: 0;
+      width: 100%;
+      height: 40%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+    }
+    .bet-zero {
+      position: absolute;
+      top: 12.5%;
+      left: 2%;
+      width: 160px;
+      transform: rotate(90deg);
+      pointer-events: auto;
+      transition: transform 0.2s;
+    }
+    .bet-zero:hover {
+      transform: rotate(90deg) scale(1.1);
+    }
+    .bet-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-template-rows: repeat(3, auto);
+      grid-gap: 2px;
+      width: 70%;
+      pointer-events: auto;
+    }
+    .bet-image {
+      width: 65px;
+      height: auto;
+      cursor: pointer;
+      transition: transform 0.2s;
+      outline: none;
+      position: relative;
+    }
+    .bet-image:hover {
+      transform: scale(1.1);
+    }
+
+    /* Outside Bets */
+    .outside-bets {
+      position: absolute;
+      top: 28%;
+      left: 0;
+      width: 100%;
+      height: 15%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      pointer-events: none;
+      z-index: 4;
+    }
+    .bet-outside {
+      pointer-events: auto;
+      width: 85px;
+      height: auto;
+      cursor: pointer;
+      transition: transform 0.2s;
+      position: relative;
+    }
+    .bet-outside:hover {
+      transform: scale(1.1);
+    }
+
+    /* Wheel Container */
+    .wheel-container {
+      position: absolute;
+      bottom: 2%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 375px;
+      height: 375px;
+      z-index: 2;
+    }
+    #rouletteWheel {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 5s cubic-bezier(0.32, 0.64, 0.45, 1);
+      cursor: pointer;
+    }
+    #rouletteRing {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    /* highlight on hover */
+    .highlighted {
+      outline: 2px solid yellow;
+      z-index: 3;
+      transform: scale(1.15);
+    }
+
+    /* Controls */
+    .roulette-controls {
+      color: #fff;
+      margin-top: 10px;
+    }
+    .roulette-controls button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #444;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    .roulette-controls button:hover {
+      background-color: #555;
+    }
+    .roulette-controls button:disabled {
+      background-color: #555;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    /* Coin Selection*/
+    .coin-selection {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .coin-img {
+      width: 60px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .coin-img:hover {
+      transform: scale(1.1);
+    }
+    .coin-selected {
+      outline: 3px solid yellow;
+      border-radius: 5px;
+    }
+
+    /* The "Show Bets" button container*/
+    .show-bets-container {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    .show-bets-container button {
+      padding: 10px 15px;
+      font-size: 16px;
+      background-color: #444;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .show-bets-container button:hover {
+      background-color: #555;
+    }
+
+    /* Bets Info Overlay */
+    #betsInfoOverlay {
+      display: none;
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      background: rgba(0,0,0,0.9);
+      color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      z-index: 9999;
+    }
+    #betsInfoOverlay h2 {
+      margin-top: 0;
+      font-size: 18px;
+      text-align: center;
+    }
+    #betsInfoClose {
+      display: block;
+      margin: 10px auto 0 auto;
+      padding: 5px 10px;
+      background: #444;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #betsInfoClose:hover {
+      background: #666;
+    }
+    #rouletteAudioToggle{
+      cursor: pointer;
+      margin-left: 10px;
+      font-size: 1.2em;
+      vertical-align: middle;
+      color: gold;
+    }
+  </style>
+</head>
+<body>
+  <video autoplay muted loop id="bgVideo" playsinline>
+    <source src="images/bodybackground.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+  <header>
+    <a href="gamindex.html" class="logo">
+      <img src="images/logo.png" alt="Website Logo" width="40" height="40">
+    </a>
+    <h1>GAMBO</h1>
+    <div class="balance-section">
+      <div id="balance">Balance: $1000</div>
+    </div>
+  </header>
+
+  <main>
+    <div id="rouletteGame">
+      <h1>Roulette
+        <!-- Audio toggle icon -->
+        <span
+          id="rouletteAudioToggle" onclick="toggleRouletteAudio()" title="Toggle Sound">🔊</span>
+      </h1>
+      
+
+      <!-- Coin Selection Bar -->
+      <div class="coin-selection">
+        <img class="coin-img coin-selected" src="images/bet_coins/10$.png" alt="10$" data-amount="10" onclick="selectCoin(this)">
+        <img class="coin-img" src="images/bet_coins/50$.png" alt="50$" data-amount="50" onclick="selectCoin(this)">
+        <img class="coin-img" src="images/bet_coins/100$.png" alt="100$" data-amount="100" onclick="selectCoin(this)">
+        <img class="coin-img" src="images/bet_coins/500$.png" alt="500$" data-amount="500" onclick="selectCoin(this)">
+      </div>
+
+      <!-- "Show Bets" button container -->
+      <div class="show-bets-container">
+        <button onclick="showBetInfo()">Show Bets</button>
+      </div>
+
+      <!-- Table + Wheel Container -->
+      <div class="table-container">
+        <img id="rouletteTable"
+             src="images/roulettebet/tablebg.png"
+             alt="Roulette Table">
+
+        <!-- Inside Bets (numbers) -->
+        <div class="inside-bets">
+          <!--zero bet -->
+          <img class="bet-zero" src="images/roulettebet/0.png" alt="0" data-color="green" data-evenodd="none" data-range="none"
+           data-dozen="none" onclick="placeBet('0')" onmouseover="hoverInside(this, true)" onmouseout="hoverInside(this, false)">
+
+          <div class="bet-grid">
+            <!-- Top row: 1,4,7,10,13,16,19,22,25,28,31,34 -->
+            <img class="bet-image" src="images/roulettebet/1.png"  alt="1"  data-color="red"   data-evenodd="odd"  data-range="1-18" 
+            data-dozen="1st12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('1')">
+            <img class="bet-image" src="images/roulettebet/4.png"  alt="4"  data-color="black" data-evenodd="even" data-range="1-18" 
+            data-dozen="1st12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('4')">
+            <img class="bet-image" src="images/roulettebet/7.png"  alt="7"  data-color="red"   data-evenodd="odd"  data-range="1-18" 
+            data-dozen="1st12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('7')">
+            <img class="bet-image" src="images/roulettebet/10.png" alt="10" data-color="black" data-evenodd="even" data-range="1-18" 
+            data-dozen="1st12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('10')">
+            <img class="bet-image" src="images/roulettebet/13.png" alt="13" data-color="black" data-evenodd="odd"  data-range="1-18" 
+            data-dozen="2nd12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('13')">
+            <img class="bet-image" src="images/roulettebet/16.png" alt="16" data-color="red"   data-evenodd="even" data-range="1-18" 
+            data-dozen="2nd12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('16')">
+            <img class="bet-image" src="images/roulettebet/19.png" alt="19" data-color="red"   data-evenodd="odd"  data-range="19-36" 
+            data-dozen="2nd12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('19')">
+            <img class="bet-image" src="images/roulettebet/22.png" alt="22" data-color="black" data-evenodd="even" data-range="19-36" 
+            data-dozen="2nd12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('22')">
+            <img class="bet-image" src="images/roulettebet/25.png" alt="25" data-color="red"   data-evenodd="odd"  data-range="19-36" 
+            data-dozen="3rd12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('25')">
+            <img class="bet-image" src="images/roulettebet/28.png" alt="28" data-color="black" data-evenodd="even" data-range="19-36"
+             data-dozen="3rd12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('28')">
+            <img class="bet-image" src="images/roulettebet/31.png" alt="31" data-color="black" data-evenodd="odd"  data-range="19-36" 
+            data-dozen="3rd12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('31')">
+            <img class="bet-image" src="images/roulettebet/34.png" alt="34" data-color="red"   data-evenodd="even" data-range="19-36" 
+            data-dozen="3rd12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('34')">
+             
+            <!-- middle row: 2,5,8,11,14,17,20,23,26,29,32,35 -->
+            <img class="bet-image" src="images/roulettebet/2.png"  alt="2"  data-color="black" data-evenodd="even" data-range="1-18" 
+            data-dozen="1st12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('2')">
+            <img class="bet-image" src="images/roulettebet/5.png"  alt="5"  data-color="red"   data-evenodd="odd"  data-range="1-18" 
+            data-dozen="1st12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('5')">
+            <img class="bet-image" src="images/roulettebet/8.png"  alt="8"  data-color="black" data-evenodd="even" data-range="1-18" 
+            data-dozen="1st12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('8')">
+            <img class="bet-image" src="images/roulettebet/11.png" alt="11" data-color="black" data-evenodd="odd"  data-range="1-18" 
+            data-dozen="1st12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('11')">
+            <img class="bet-image" src="images/roulettebet/14.png" alt="14" data-color="red"   data-evenodd="even" data-range="1-18" 
+            data-dozen="2nd12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('14')">
+            <img class="bet-image" src="images/roulettebet/17.png" alt="17" data-color="black" data-evenodd="odd"  data-range="1-18" 
+            data-dozen="2nd12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('17')">
+            <img class="bet-image" src="images/roulettebet/20.png" alt="20" data-color="black" data-evenodd="even" data-range="19-36" 
+            data-dozen="2nd12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('20')">
+            <img class="bet-image" src="images/roulettebet/23.png" alt="23" data-color="red"   data-evenodd="odd"  data-range="19-36" 
+            data-dozen="2nd12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('23')">
+            <img class="bet-image" src="images/roulettebet/26.png" alt="26" data-color="black" data-evenodd="even" data-range="19-36" 
+            data-dozen="3rd12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('26')">
+            <img class="bet-image" src="images/roulettebet/29.png" alt="29" data-color="black" data-evenodd="odd"  data-range="19-36" 
+            data-dozen="3rd12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('29')">
+            <img class="bet-image" src="images/roulettebet/32.png" alt="32" data-color="red"   data-evenodd="even" data-range="19-36" 
+            data-dozen="3rd12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('32')">
+            <img class="bet-image" src="images/roulettebet/35.png" alt="35" data-color="black" data-evenodd="odd"  data-range="19-36" 
+            data-dozen="3rd12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('35')">
+
+           <!-- Bottom row: 3,6,9,12,15,18,21,24,27,30,33,36 -->
+            <img class="bet-image" src="images/roulettebet/3.png"  alt="3"  data-color="red"   data-evenodd="odd"   data-range="1-18" 
+            data-dozen="1st12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('3')">
+            <img class="bet-image" src="images/roulettebet/6.png"  alt="6"  data-color="black" data-evenodd="even"  data-range="1-18" 
+            data-dozen="1st12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('6')">
+            <img class="bet-image" src="images/roulettebet/9.png"  alt="9"  data-color="red"   data-evenodd="odd"   data-range="1-18" 
+            data-dozen="1st12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('9')">
+            <img class="bet-image" src="images/roulettebet/12.png" alt="12" data-color="red"   data-evenodd="even"  data-range="1-18" 
+            data-dozen="1st12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('12')">
+            <img class="bet-image" src="images/roulettebet/15.png" alt="15" data-color="black" data-evenodd="odd"   data-range="1-18" 
+            data-dozen="2nd12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('15')">
+            <img class="bet-image" src="images/roulettebet/18.png" alt="18" data-color="red"   data-evenodd="even"  data-range="1-18" 
+            data-dozen="2nd12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('18')">
+            <img class="bet-image" src="images/roulettebet/21.png" alt="21" data-color="red"   data-evenodd="odd"   data-range="19-36" 
+            data-dozen="2nd12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('21')">
+            <img class="bet-image" src="images/roulettebet/24.png" alt="24" data-color="black" data-evenodd="even"  data-range="19-36" 
+            data-dozen="2nd12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('24')">
+            <img class="bet-image" src="images/roulettebet/27.png" alt="27" data-color="red"   data-evenodd="odd"   data-range="19-36" 
+            data-dozen="3rd12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('27')">
+            <img class="bet-image" src="images/roulettebet/30.png" alt="30" data-color="red"   data-evenodd="even"  data-range="19-36" 
+            data-dozen="3rd12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('30')">
+            <img class="bet-image" src="images/roulettebet/33.png" alt="33" data-color="black" data-evenodd="odd"   data-range="19-36" 
+            data-dozen="3rd12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('33')">
+            <img class="bet-image" src="images/roulettebet/36.png" alt="36" data-color="red"   data-evenodd="even"  data-range="19-36" 
+            data-dozen="3rd12" onmouseover="hoverInside(this,true)" onmouseout="hoverInside(this,false)" onclick="placeBet('36')">
+
+          </div>
+        </div>
+
+        <!-- Outside Bets (red, black, even, etc.) -->
+        <div class="outside-bets">
+          <img class="bet-outside"
+               src="images/roulettebet/1_18.png" alt="1 to 18" data-outside="1-18" onclick="placeBet('1-18')" 
+               onmouseover="hoverOutside('1-18', true)" onmouseout="hoverOutside('1-18', false)">
+          <img class="bet-outside" src="images/roulettebet/1st12.png" alt="1st 12" data-outside="1st12"
+               onmouseover="hoverOutside('1st12', true)" onmouseout="hoverOutside('1st12', false)" onclick="placeBet('1st12')">
+          <img class="bet-outside" src="images/roulettebet/even.png" alt="Even" data-outside="even"
+               onmouseover="hoverOutside('even', true)" onmouseout="hoverOutside('even', false)" onclick="placeBet('even')">
+          <img class="bet-outside" src="images/roulettebet/red.png" alt="Red" data-outside="red"
+               onmouseover="hoverOutside('red', true)" onmouseout="hoverOutside('red', false)" onclick="placeBet('red')">
+          <img class="bet-outside" src="images/roulettebet/2nd12.png" alt="2nd 12" data-outside="2nd12"
+               onmouseover="hoverOutside('2nd12', true)" onmouseout="hoverOutside('2nd12', false)" onclick="placeBet('2nd12')">
+          <img class="bet-outside" src="images/roulettebet/black.png" alt="Black" data-outside="black"
+               onmouseover="hoverOutside('black', true)" onmouseout="hoverOutside('black', false)" onclick="placeBet('black')">
+          <img class="bet-outside" src="images/roulettebet/odd.png" alt="Odd" data-outside="odd"
+               onmouseover="hoverOutside('odd', true)" onmouseout="hoverOutside('odd', false)" onclick="placeBet('odd')">
+          <img class="bet-outside" src="images/roulettebet/3rd12.png" alt="3rd 12" data-outside="3rd12"
+               onmouseover="hoverOutside('3rd12', true)" onmouseout="hoverOutside('3rd12', false)" onclick="placeBet('3rd12')">
+          <img class="bet-outside" src="images/roulettebet/19_36.png" alt="19 to 36" data-outside="19-36"
+               onmouseover="hoverOutside('19-36', true)" onmouseout="hoverOutside('19-36', false)" onclick="placeBet('19-36')">  
+
+        </div>
+
+        <!-- Wheel Container near bottom -->
+        <div class="wheel-container">
+          <img id="rouletteWheel" src="images/roulettebet/rouletteWheel.png" alt="Roulette Wheel">
+          <img id="rouletteRing" src="images/roulettebet/rouletteWheelRing.png" alt="Wheel Ring">
+        </div>
+      </div>
+
+      <!-- Spin & Clear Controls -->
+      <div class="roulette-controls">
+        <p id="rouletteMessage">Place your bets!</p>
+        <button id="spinBtn" onclick="spinWheel()">Spin</button>
+        <button id="clearBtn" onclick="clearBets()">Clear Bets</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Overlay listing the current bets & amounts -->
+  <div id="betsInfoOverlay">
+    <h2>Current Bets</h2>
+    <div id="betsList"></div>
+    <button id="betsInfoClose" onclick="closeBetInfo()">Close</button>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2025 GAMBO by Team ZSw0rD. All rights reserved.</p>
+  </footer>
+
+
+</body>
+</html>

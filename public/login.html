@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gambo - Login</title>
+  <link rel="icon" type="image/jpg" href="images/logo.png">
+  <link rel="stylesheet" href="gambo.css">
+  <script src="gambo.js"></script>
+
+  <style>
+    #bgVideolog {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit:fill;
+      z-index:1;
+      opacity:0.02;
+    }
+    body {
+      background: url('images/login.png') no-repeat center center fixed;
+      background-size: cover;
+      z-index:0;
+    }
+    #logH1 {
+      font-size: 75px;
+      font-weight: bold;
+      font-family: 'Times New Roman', Times, serif;
+      font-style: italic;
+      color: gold;
+      text-shadow:
+        -2px -2px 0 black,
+        2px -2px 0 black,
+        -2px 2px 0 black,
+        2px 2px 0 black;
+      margin: 0;            /* Remove default top/bottom margin */
+      margin-top: 30px;
+      margin-bottom: 10px;  /* Small gap after h1 */
+    }
+
+    #logp {
+      font-size: 25px;
+      font-weight: 900;
+      font-family: 'Times New Roman', Times, serif;
+      font-style: italic;
+      color: gold;
+      text-shadow:
+        -1px -1px 0 black,
+        1px -1px 0 black,
+        -1px 1px 0 black,
+        1px 1px 0 black;
+      margin: 0;           
+      margin-top: 2px;    
+    }
+    .main {
+      width: 400px;
+      height: 500px;
+      background: rgba(255, 232, 100, 0.212);
+      overflow: hidden;
+      border-radius: 10px;
+      box-shadow: 5px 20px 50px #000;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-40%,-50%);
+      z-index:2
+    }
+    /* Checkboxes for toggling forms, hidden */
+    #chk {
+      display: none;
+    }
+
+    .signup, .login {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+    }
+
+    .signup label, .login label {
+      color: gold;
+      text-shadow:
+      -1px -1px 0 black,
+      1px -1px 0 black,
+      -1px  1px 0 black,
+      1px  1px 0 black;           
+      font-size: 2.3em;
+      font-style: italic;
+      margin: 50px 0 20px 0;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.5s ease-in-out;
+      display: block;
+    }
+
+    .signup input, .login input {
+      width: 80%;
+      background: #e0dede;
+      font-style: italic;
+      margin: 10px auto;
+      padding: 12px;
+      font-size: 0.9em;
+      border: none;
+      outline: none;
+      border-radius: 5px;
+      display: block;
+    }
+
+    .signup button, .login button {
+      width: 80%;
+      height: 60px;
+      margin: 15px auto;
+      display: block;
+      color: #fff;
+      background: #22a707;
+      text-shadow:
+      -1px -1px 0 black,
+      1px -1px 0 black,
+      -1px  1px 0 black,
+      1px  1px 0 black;  
+      font-size: 1.5em;
+      font-style: italic;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      transition: 0.2s;
+      cursor: pointer;
+    }
+    #guest button{
+      width: 30%;
+      height: 30px;
+      margin: 15px auto;
+      display: block;
+      color: #fff;
+      background: #22a707;
+      text-shadow:
+      -1px -1px 0 black,
+      1px -1px 0 black,
+      -1px  1px 0 black,
+      1px  1px 0 black;  
+      font-size: 0.8em;
+      font-style: italic;
+      border: none;
+      border-radius: 5px;
+      transition: 0.2s;
+      cursor: pointer;
+    }
+    .signup button:hover, .login button:hover, #guest button:hover{
+      background:gold;
+    }
+
+    /* The "switch" effect using #chk for toggling sign-up vs. login */
+    .login {
+      background: #ff0000;
+      font-style: italic;
+      border-radius: 60% / 10%;
+      transform: translateY(-170px);
+      transition: 0.8s ease-in-out;
+    }
+    .login label {
+      color: gold;
+      transform: scale(0.8);
+    }
+    #chk:checked ~ .login {
+      transform: translateY(-500px);
+    }
+    #chk:checked ~ .login label {
+      transform: scale(1);
+    }
+    #chk:checked ~ .signup label {
+      transform: scale(0.6);
+    }
+  </style>
+</head>
+<body>
+  <video autoplay muted loop id="bgVideolog" playsinline>
+    <source src="images/bodybackground.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video> 
+  <h1 id="logH1">Welcome To Gambo</h1>
+  <p id="logp">99% Gamblers Quit Before Winning it Big</p>
+  <p id="logp">Now With Gambo Have A Chance To Win It BIG</p>
+
+  <div class="main">  	
+    <!-- The checkbox toggler for the fancy flipping form: -->
+    <input type="checkbox" id="chk" aria-hidden="true">
+
+    <!-- Sign Up Form -->
+    <div class="signup">
+      <form onsubmit="handleSignup(event)">
+        <label for="chk" aria-hidden="true">Sign up</label>
+        <br>
+        <input type="text" id="signupUsername" placeholder="User Name" required>
+        <input type="email" id="signupEmail" placeholder="Email" required>
+        <input type="password" id="signupPassword" placeholder="Password" required>
+        <button type="submit">Sign up</button>
+        <div id="guest">
+        <button onclick="userGuestLogin()">Guest Login</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Login Form -->
+    <div class="login">
+      <form onsubmit="handleLogin(event)">
+        <label for="chk" aria-hidden="true">Log in</label>
+        <br>
+        <input type="email" id="loginEmail" placeholder="Email" required>
+        <input type="password" id="loginPassword" placeholder="Password" required>
+        <button type="submit">Log in</button>
+        <div id="guest">
+        <button onclick="userGuestLogin()">Guest Login</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</body>
+</html>

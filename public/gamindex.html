@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gambo - Home</title>
+    <link rel="icon" type="image/jpg" href="images/logo.png">
+    <link rel="stylesheet" href="gambo.css">
+    <script src="gambo.js"></script>
+    <style>
+        .slot-info{
+            color: gold;
+            margin: 0;
+            text-align: center;
+            text-shadow:
+            -1px -1px 0 black,
+            1px -1px 0 black,
+            -2px  2px 0 black,
+            2px  2px 0 black; 
+        }
+    </style>
+      
+</head>
+<body>
+    <video autoplay muted loop id="bgVideo" playsinline>
+      <source src="images/bodybackground.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video> 
+    <header>
+        <a href="gamindex.html" class="logo">
+            <img src="images/logo.png" alt="Website Logo" width="40" height="40">
+        </a>
+        <h1>GAMBO</h1>
+        <div class="balance-section">
+            <div id="balance"></div>
+            <div class="transaction-buttons">
+                <button onclick="universalUpdateBalance(100)">Deposit $100</button>
+            </div>
+            <div class="logout">
+                <button onclick="userLogout()">Logout</button>
+            </div>
+        </div>
+    </header>
+    <main>
+    <div class="search-container">
+        <input type="text" id="searchBar" placeholder="Search for Games🔎" onkeyup="homeFilterCards()">
+        <p id="noResultsMessage" style="display: none;">No Games match your search.</p>
+    </div>
+
+    <div class="container">
+        <div class="slotcard" onclick="universalOpenPage('slot_machine.html')">
+            <img src="images/slot.png" alt="Slot_Machine">
+            <div class="slot-info">
+                <h2>Slot Machine</h2>
+            </div>
+        </div>
+        <div class="slotcard" onclick="universalOpenPage('blackjack.html')">
+            <img src="images/blackjack.png" alt="blackjack">
+            <div class="slot-info">
+                <h2>BlackJack</h2>
+            </div>
+        </div>
+        <div class="slotcard" onclick="universalOpenPage('poker.html')">
+            <img src="images/poker.jpg" alt="poker">
+            <div class="slot-info">
+                <h2>Poker</h2>
+            </div>
+        </div>
+        <div class="slotcard" onclick="universalOpenPage('roulette.html')">
+            <img src="images/roulette.png" alt="roulette">
+            <div class="slot-info">
+                <h2>Roulette</h2>
+            </div>
+        </div>
+        <div class="slotcard" onclick="universalOpenPage('sweepBomb.html')">
+            <img src="images/mines.png" alt="SweepBomb">
+            <div class="slot-info">
+                <h2>Sweep Bombs</h2>
+                <p></p>
+            </div>
+        </div>
+        <div class="slotcard" onclick="universalOpenPage('dicy.html')">
+            <img src="images/dicy.png" alt="dicy">
+            <div class="slot-info">
+                <h2>Dicy</h2>
+                <p></p>
+            </div>
+        </div>
+    </div>
+    </main>
+    <footer class="site-footer">
+        <p>© 2025 GAMBO by Team ZSw0rD. All rights reserved.</p>
+    </footer>
+</body>
+</html>

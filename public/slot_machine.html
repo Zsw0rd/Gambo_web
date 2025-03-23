@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/jpg" href="images/logo.png" />
+  <title>Slot Machine - Gambo</title>
+  <link rel="stylesheet" href="gambo.css" />
+  <script src ="gambo.js"></script>
+
+  <style>
+    #slotGame {
+      margin: 20px auto;
+      padding: 20px;
+      width: 80vw;
+      max-width: 1300px;
+      background-color: #242424; 
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    
+    #slotGame h1 {
+      color: gold;
+      margin: 0;
+      text-align: center;
+      text-shadow:
+      -1px -1px 0 black,
+      1px -1px 0 black,
+      -2px  2px 0 black,
+      2px  2px 0 black; 
+    }
+
+ 
+    .slot-machine-container {
+      text-align: center;
+      margin-top: 30px;
+      width: 100%;
+    }
+    .slot-machine {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;        
+      width: 100%;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+    .slot {
+      aspect-ratio:1/1;
+      flex: 1 1 300px;    
+      max-width: 400px;   
+      min-width: 200px;   
+      height: auto;
+      border: 2px solid #444;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #222;
+    }
+    .slot img {
+      aspect-ratio:1/1;
+      width: 100%;
+      height: auto;
+      max-height: 320px;
+    }
+    .controls {
+      margin-top: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .controls input[type="number"] {
+      width: 150px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #444;
+      border-radius: 5px;
+      background-color: #333;
+      color: #fff;
+      outline: none;
+    }
+
+    .controls button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #444;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .controls button:hover {
+      background-color: #555;
+    }
+    .result {
+      font-size: 18px;
+      margin-top: 20px;
+      color: #ffd700;
+    }
+    .controls button:disabled {
+      background-color: #555;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    .slotAudioToggle{
+      cursor: pointer;
+      margin-left: 10px;
+      font-size: 1.2em;
+      vertical-align: middle;
+      color: gold; /*default color for on*/
+
+    }
+  </style>
+</head>
+<body>
+  <video autoplay muted loop id="bgVideo" playsinline>
+    <source src="images/bodybackground.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+
+  <header>
+    <a href="gamindex.html" class="logo">
+      <img src="images/logo.png" alt="Website Logo" width="40" height="40" />
+    </a>
+    <h1>GAMBO</h1>
+    <div class="balance-section">
+      <div id="balance"></div>
+    </div>
+  </header>
+
+  <main>
+    <div id="slotGame">
+      <h1>
+        Slot Machine
+        <span id="slotAudioToggle" onclick="toggleSlotAudio()" title="Toggle Sound">
+        &#128266;  <!-- speaker icon -->
+        </span>
+      </h1>
+
+      <div class="slot-machine-container">
+        <div class="slot-machine">
+          <div class="slot">
+            <img id="slot1" src="images/diamond.png" alt="slot" />
+          </div>
+          <div class="slot">
+            <img id="slot2" src="images/diamond.png" alt="slot" />
+          </div>
+          <div class="slot">
+            <img id="slot3" src="images/diamond.png" alt="slot" />
+          </div>
+        </div>
+
+        <div class="controls">
+          <input type="number" id="betAmount" placeholder="Enter your bet" min="1" />
+          <button id="spinButton" onclick="slotPlaySlot()">Spin</button>
+        </div>
+
+        <p class="result" id="resultMessage"></p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p>© 2025 GAMBO by Team ZSw0rD. All rights reserved.</p>
+  </footer>
+</body>
+</html>

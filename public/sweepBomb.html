@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sweep Bombs - Gambo</title>
+  <link rel="icon" type="image/jpg" href="images/logo.png">
+  <link rel="stylesheet" href="gambo.css">
+  <script src="gambo.js"></script>
+  <style>
+    #minesContainer {
+      margin: 20px auto;
+      padding: 20px;
+      width: 75vw;
+      max-width: 1200px;
+      background-color: #222;  
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    #minesContainer h1 {
+      color: gold;
+      margin: 0;
+      text-align: center;
+      text-shadow:
+      -1px -1px 0 black,
+      1px -1px 0 black,
+      -2px  2px 0 black,
+      2px  2px 0 black; 
+    }
+
+    .mines-info {
+      color: green;
+      text-shadow:
+      -1px -1px 0 black,
+      1px -1px 0 black,
+      -1px  1px 0 black,
+      1px  1px 0 black; 
+      font-size: 18px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .mines-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .control-group label {
+      margin-bottom: 3px;
+      font-size: 16px;
+    }
+    .control-group input,
+    .control-group select {
+      padding: 6px 10px;
+      border-radius: 4px;
+      border: 1px solid #444;
+      background-color: #333;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+    }
+
+
+    .mines-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 90px);
+      grid-gap: 10px;
+    }
+
+    .mines-cell {
+      width: 90px;
+      height: 90px;
+      background-color: #333;
+      border-radius: 5px;
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background 0.2s, filter 0.2s;
+    }
+    .mines-cell:hover {
+      background-color: #444;
+    }
+
+
+    .minesRevealedSafe {
+      background-color: #444; 
+    }
+    .minesRevealedBomb {
+      background-color: #444;
+    }
+    .minesGreyed {
+      filter: grayscale(80%);
+    }
+    .mines-multiplier {
+      color: #fff;
+      font-size: 20px;
+      text-align: center;
+      margin: 10px 0;
+    }
+    .mines-buttons {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .mines-buttons button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #444;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .mines-buttons button:hover {
+      background-color: #555;
+    }
+    .mines-buttons button:disabled {
+      background-color: #555;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    #sweepAudioToggle{
+      cursor: pointer;
+      margin-left: 10px;
+      font-size: 1.2em;
+      vertical-align: middle;
+      color: gold;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="gamindex.html" class="logo">
+      <img src="images/logo.png" alt="Gambo Logo" width="40" height="40">
+    </a>
+    <h1>GAMBO</h1>
+    <div class="balance-section">
+      <div id="balance"></div>
+    </div>
+  </header>
+
+  <main>
+    <div id="minesContainer">
+      <h1> Sweep Bombs
+        <span id="sweepAudioToggle" onclick="toggleSweepAudio()" title="Toggle Sound">🔊</span>
+      </h1>
+      
+
+      <div class="mines-info" id="minesMessage">
+        Set your bet and number of bombs, then click Start!
+      </div>
+
+      <div class="mines-controls">
+        <div class="control-group">
+          <label for="minesBetAmount">Bet Amount:</label>
+          <input type="number" id="minesBetAmount" value="50">
+        </div>
+        <div class="control-group">
+          <label for="minesNumBombs">No of Bombs:</label>
+          <select id="minesNumBombs">
+            <option value="3">3</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mines-grid" id="minesGrid"></div>
+
+ 
+      <div class="mines-multiplier" id="minesMultiplier">
+        Multiplier: x1.0
+      </div>
+
+      <div class="mines-buttons">
+        <button id="minesStartBtn">Start Game</button>
+        <button id="minesCashoutBtn" disabled>Cash Out</button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <p>© 2025 GAMBO by Team ZSw0rD. All rights reserved.</p>
+  </footer>
+</body>
+</html>
