@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Root URL gets rewritten to /login.html but list both just in case -->
+
   <url><loc>https://gambo.vercel.app/</loc></url>
-  
-  <!-- Add every public page you want indexed -->
+
   <url><loc>https://gambo.vercel.app/gamindex.html</loc></url>
   <url><loc>https://gambo.vercel.app/blackjack.html</loc></url>
   <url><loc>https://gambo.vercel.app/poker.html</loc></url>
