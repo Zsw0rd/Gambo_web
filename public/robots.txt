@@ -1,0 +1,5 @@
+# /robots.txt  -- allow everything and point to the sitemap
+User-agent: *
+Allow: /
+
+Sitemap: https://gambo.vercel.app/sitemap.xml
