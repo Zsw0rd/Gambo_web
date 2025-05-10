@@ -141,8 +141,8 @@ function userGuestLogin() {
 function userLogout() {
   setActiveUser("");
   sessionStorage.removeItem("guestBalance");
-  // maybe redirect to userLogin.html
-  window.location.href = "login.html";
+  // maybe redirect to userindex.html
+  window.location.href = "index.html";
 }
 
 // Initialize & display user’s balance

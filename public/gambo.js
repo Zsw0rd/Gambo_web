@@ -106,7 +106,7 @@ async function userLogout() {
   localStorage.removeItem('sessionToken');
   localStorage.removeItem('username');
   localStorage.removeItem('balance');
-  window.location.href = 'login.html';
+  window.location.href = 'index.html';
 }
 
 /**
