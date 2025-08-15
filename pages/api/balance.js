@@ -1,47 +1,37 @@
 // pages/api/balance.js
 import { PrismaClient } from '@prisma/client'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from './auth/[...nextauth]'
 
 const prisma = new PrismaClient()
 
-// simple function to parse the userId from the "token-<id>-<timestamp>"
-function parseUserId(token) {
-  if (!token.startsWith('token-')) return null;
-  // Remove the "token-" prefix:
-  const withoutPrefix = token.slice(6);
-  // Find the last hyphen to separate the UUID from the timestamp:
-  const lastHyphenIndex = withoutPrefix.lastIndexOf('-');
-  if (lastHyphenIndex === -1) return null;
-  return withoutPrefix.substring(0, lastHyphenIndex);
-}
-
 export default async function handler(req, res) {
+  const session = await getServerSession(req, res, authOptions)
+  if (!session || !session.user) {
+    return res.status(401).json({ error: 'Unauthorized' })
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: session.user.id } })
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' })
+  }
+  if (!user.verified) {
+    return res.status(403).json({ error: 'Email not verified' })
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { action, sessionToken, amount } = req.body
-  if (!action || !sessionToken) {
-    return res.status(400).json({ error: 'Missing action or sessionToken' })
+  const { action, amount } = req.body
+  if (!action) {
+    return res.status(400).json({ error: 'Missing action' })
   }
 
   try {
-    const userId = parseUserId(sessionToken)
-    if (!userId) {
-      return res.status(401).json({ error: 'Invalid or missing session token' })
-    }
-
-    // find user in DB
-    const user = await prisma.user.findUnique({ where: { id: userId }});
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' })
-    }
-
     if (action === 'get') {
-      // simply return current balance
       return res.status(200).json({ balance: user.balance })
-    }
-    else if (action === 'update') {
-      // we add "amount" => could be positive or negative
+    } else if (action === 'update') {
       if (typeof amount !== 'number') {
         return res.status(400).json({ error: 'Amount must be a number' })
       }
@@ -51,12 +41,11 @@ export default async function handler(req, res) {
       }
 
       const updatedUser = await prisma.user.update({
-        where: { id: userId },
+        where: { id: user.id },
         data: { balance: newBalance }
       })
       return res.status(200).json({ balance: updatedUser.balance })
-    }
-    else {
+    } else {
       return res.status(400).json({ error: 'Unknown balance action' })
     }
   } catch (err) {
