@@ -15,13 +15,16 @@ function parseUserId(token) {
 }
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
+  // This endpoint only exposes read-only balance information. All balance
+  // updates must occur inside game-specific API routes after outcomes are
+  // verified, preventing clients from directly manipulating funds here.
+  if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { action, sessionToken, amount } = req.body
-  if (!action || !sessionToken) {
-    return res.status(400).json({ error: 'Missing action or sessionToken' })
+  const { sessionToken } = req.query
+  if (!sessionToken) {
+    return res.status(400).json({ error: 'Missing sessionToken' })
   }
 
   try {
@@ -30,35 +33,14 @@ export default async function handler(req, res) {
       return res.status(401).json({ error: 'Invalid or missing session token' })
     }
 
-    // find user in DB
-    const user = await prisma.user.findUnique({ where: { id: userId }});
+    // Find user in DB
+    const user = await prisma.user.findUnique({ where: { id: userId } })
     if (!user) {
       return res.status(404).json({ error: 'User not found' })
     }
 
-    if (action === 'get') {
-      // simply return current balance
-      return res.status(200).json({ balance: user.balance })
-    }
-    else if (action === 'update') {
-      // we add "amount" => could be positive or negative
-      if (typeof amount !== 'number') {
-        return res.status(400).json({ error: 'Amount must be a number' })
-      }
-      const newBalance = user.balance + amount
-      if (newBalance < 0) {
-        return res.status(400).json({ error: 'Insufficient funds!' })
-      }
-
-      const updatedUser = await prisma.user.update({
-        where: { id: userId },
-        data: { balance: newBalance }
-      })
-      return res.status(200).json({ balance: updatedUser.balance })
-    }
-    else {
-      return res.status(400).json({ error: 'Unknown balance action' })
-    }
+    // Return current balance only; no updates allowed.
+    return res.status(200).json({ balance: user.balance })
   } catch (err) {
     console.error(err)
     return res.status(500).json({ error: 'Server error' })
