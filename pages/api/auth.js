@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcrypt'
 
 const prisma = new PrismaClient()
+const DAILY_BONUS = 100
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -80,11 +81,30 @@ export default async function handler(req, res) {
       // Build a "fake" session token
       const sessionToken = `token-${foundUser.id}-${Date.now()}`
 
+      // Daily bonus processing
+      const now = new Date()
+      let awarded = 0
+      if (!foundUser.lastLogin || new Date(foundUser.lastLogin).toDateString() !== now.toDateString()) {
+        awarded = DAILY_BONUS
+      }
+
+      const dataToUpdate = { lastLogin: now }
+      if (awarded > 0) {
+        dataToUpdate.balance = { increment: awarded }
+        dataToUpdate.dailyBonusClaimed = false
+      }
+
+      const updatedUser = await prisma.user.update({
+        where: { id: foundUser.id },
+        data: dataToUpdate
+      })
+
       return res.status(200).json({
         message: 'Login successful',
         sessionToken,
-        username: foundUser.username,
-        balance: foundUser.balance
+        username: updatedUser.username,
+        balance: updatedUser.balance,
+        awarded
       })
     }
 
